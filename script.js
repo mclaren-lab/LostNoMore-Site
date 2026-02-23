@@ -1,3 +1,16 @@
+// Loading helper functions
+function showLoading(button, originalText) {
+  button.classList.add('loading');
+  button.innerHTML = '<span class="loading-spinner"></span>Loading...';
+  button.disabled = true;
+}
+
+function hideLoading(button, originalText) {
+  button.classList.remove('loading');
+  button.innerHTML = originalText;
+  button.disabled = false;
+}
+
 // Validation functions
 function validateName(name, errorId) {
   const error = document.getElementById(errorId);
@@ -192,15 +205,42 @@ function displayReports(reports) {
 
 // Show Lost Item form
 function showLost() {
-  hideAll();
-  document.getElementById("lost").classList.remove("hidden");
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  showLoading(btn, originalText);
+  
+  setTimeout(() => {
+    hideAll();
+    document.getElementById("lost").classList.remove("hidden");
+    hideLoading(btn, originalText);
+  }, 800);
+}
+
+// Show Found Item form
+function showFound() {
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  showLoading(btn, originalText);
+  
+  setTimeout(() => {
+    hideAll();
+    document.getElementById("found").classList.remove("hidden");
+    hideLoading(btn, originalText);
+  }, 800);
 }
 
 // Show Reports
 function showReports() {
-  hideAll();
-  document.getElementById("reportsList").classList.remove("hidden");
-  displayReports(JSON.parse(localStorage.getItem('reports') || '[]'));
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  showLoading(btn, originalText);
+  
+  setTimeout(() => {
+    hideAll();
+    document.getElementById("reportsList").classList.remove("hidden");
+    displayReports(JSON.parse(localStorage.getItem('reports') || '[]'));
+    hideLoading(btn, originalText);
+  }, 800);
 }
 
 // Hide Reports
@@ -210,31 +250,69 @@ function hideReports() {
 
 // Go back to dashboard (hide all forms)
 function goBack() {
-  hideAll();
-  // Clear form data when going back
-  document.querySelectorAll('form').forEach(form => {
-    form.reset();
-  });
-  // Clear character counters
-  document.querySelectorAll('.char-counter span').forEach(counter => {
-    counter.textContent = '0';
-  });
-  // Clear selected items
-  selectedItems = [];
-  selectedFoundItems = [];
-  selectedFoundSite = '';
-  selectedLostSite = '';
-  // Reset item button colors
-  document.querySelectorAll('.item-buttons button').forEach(btn => {
-    btn.style.background = '#e6efff';
-    btn.style.color = '#1a1a2e';
-  });
-  // Reset site button colors
-  document.querySelectorAll('.site-buttons button').forEach(btn => {
-    btn.classList.remove('selected');
-    btn.style.background = '#e8f4fd';
-    btn.style.color = '#1a1a2e';
-  });
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  
+  if (btn && btn.tagName === 'BUTTON') {
+    showLoading(btn, originalText);
+    
+    setTimeout(() => {
+      hideAll();
+      // Clear form data when going back
+      document.querySelectorAll('form').forEach(form => {
+        form.reset();
+      });
+      // Clear character counters
+      document.querySelectorAll('.char-counter span').forEach(counter => {
+        counter.textContent = '0';
+      });
+      // Clear selected items
+      selectedItems = [];
+      selectedFoundItems = [];
+      selectedFoundSite = '';
+      selectedLostSite = '';
+      // Reset item button colors
+      document.querySelectorAll('.item-buttons button').forEach(btn => {
+        btn.style.background = '#e6efff';
+        btn.style.color = '#1a1a2e';
+      });
+      // Reset site button colors
+      document.querySelectorAll('.site-buttons button').forEach(btn => {
+        btn.classList.remove('selected');
+        btn.style.background = '#e8f4fd';
+        btn.style.color = '#1a1a2e';
+      });
+      
+      hideLoading(btn, originalText);
+    }, 500);
+  } else {
+    // If no button clicked, execute immediately
+    hideAll();
+    // Clear form data when going back
+    document.querySelectorAll('form').forEach(form => {
+      form.reset();
+    });
+    // Clear character counters
+    document.querySelectorAll('.char-counter span').forEach(counter => {
+      counter.textContent = '0';
+    });
+    // Clear selected items
+    selectedItems = [];
+    selectedFoundItems = [];
+    selectedFoundSite = '';
+    selectedLostSite = '';
+    // Reset item button colors
+    document.querySelectorAll('.item-buttons button').forEach(btn => {
+      btn.style.background = '#e6efff';
+      btn.style.color = '#1a1a2e';
+    });
+    // Reset site button colors
+    document.querySelectorAll('.site-buttons button').forEach(btn => {
+      btn.classList.remove('selected');
+      btn.style.background = '#e8f4fd';
+      btn.style.color = '#1a1a2e';
+    });
+  }
 }
 
 // Hide all form sections
@@ -397,107 +475,95 @@ function saveReport(report) {
 function login() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
-
-  function login() {
-    // Kunin ang email value para sa Welcome message
-    const emailValue = document.getElementById('email').value;
-
-    if (emailValue) {
-        // 1. Itago ang LOGIN PAGE section
-        document.getElementById('loginPage').classList.add('hidden');
-
-        // 2. Ipakita ang DASHBOARD section
-        document.getElementById('dashboard').classList.remove('hidden');
-
-        // 3. I-update ang pangalan sa dashboard
-        document.getElementById('userName').innerText = emailValue;
-    } else {
-        alert("Please enter your email.");
-    }
-}
+  const loginBtn = event.target;
+  const originalText = loginBtn.innerHTML;
   
-  // Debug logging
-  console.log('Login attempt:', { email, password });
+  // Show loading state
+  showLoading(loginBtn, originalText);
   
-  // Clear previous errors
-  clearErrors();
-  
-  // Validate inputs
-  let isValid = true;
-  
-  if (!validateEmail(email, "emailError")) isValid = false;
-  if (!validatePassword(password, "passwordError")) isValid = false;
-  
-  if (isValid) {
-    console.log('Validation passed, checking admin credentials...');
+  setTimeout(() => {
+    // Debug logging
+    console.log('Login attempt:', { email, password });
     
-    // Check for admin credentials first
-    if (email === "admin@gmail.com" && password === "admin123") {
-      console.log('Admin credentials verified!');
+    // Clear previous errors
+    clearErrors();
+    
+    // Validate inputs
+    let isValid = true;
+    
+    if (!validateEmail(email, "emailError")) isValid = false;
+    if (!validatePassword(password, "passwordError")) isValid = false;
+    
+    if (isValid) {
+      console.log('Validation passed, checking admin credentials...');
       
-      const adminUser = {
-        name: "Administrator",
-        email: "admin@gmail.com",
-        password: password, // Store the actual password!
-        role: "admin",
-        isAdmin: true
-      };
-      localStorage.setItem('currentUser', JSON.stringify(adminUser));
-      document.getElementById("userName").textContent = adminUser.name;
-      document.getElementById("adminPanelBtn").classList.remove("hidden");
-      document.getElementById("loginPage").classList.add("hidden");
-      document.getElementById("dashboard").classList.remove("hidden");
-      hideAll(); // Hide all forms to show clean dashboard
+      // Check for admin credentials first
+      if (email === "admin@gmail.com" && password === "admin123") {
+        console.log('Admin credentials verified!');
+        
+        const adminUser = {
+          name: "Administrator",
+          email: "admin@gmail.com",
+          password: password,
+          role: "admin",
+          isAdmin: true
+        };
+        localStorage.setItem('currentUser', JSON.stringify(adminUser));
+        document.getElementById("userName").textContent = adminUser.name;
+        document.getElementById("adminPanelBtn").classList.remove("hidden");
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        hideAll();
+      } else {
+        console.log('Regular user credentials:', { email, password });
+        
+        const regularUser = {
+          name: email.split('@')[0],
+          email: email,
+          password: password,
+          role: "user",
+          isAdmin: false
+        };
+        localStorage.setItem('currentUser', JSON.stringify(regularUser));
+        document.getElementById("userName").textContent = regularUser.name;
+        document.getElementById("adminPanelBtn").classList.add("hidden");
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        hideAll();
+      }
     } else {
-      console.log('Regular user credentials:', { email, password });
-      
-      // For regular users, store their credentials
-      const regularUser = {
-        name: email.split('@')[0], // Use part before @ as name
-        email: email,
-        password: password, // Store the password for regular users too
-        role: "user",
-        isAdmin: false
-      };
-      localStorage.setItem('currentUser', JSON.stringify(regularUser));
-      document.getElementById("userName").textContent = regularUser.name;
-      document.getElementById("adminPanelBtn").classList.add("hidden");
-      document.getElementById("loginPage").classList.add("hidden");
-      document.getElementById("dashboard").classList.remove("hidden");
-      hideAll(); // Hide all forms to show clean dashboard
+      console.log('Validation failed');
     }
-  } else {
-    console.log('Validation failed');
-  }
-  
-  const user = users.find(u => u.email === email && u.password === password);
-  console.log('User found in storage:', user);
-  
-  if (user) {
-    console.log('Setting current user from storage');
-    user.isAdmin = false;
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    document.getElementById("userName").textContent = user.name;
-    document.getElementById("adminPanelBtn").classList.add("hidden");
-    document.getElementById("loginPage").classList.add("hidden");
-    document.getElementById("dashboard").classList.remove("hidden");
-    hideAll(); // Hide all forms to show clean dashboard
-  } else {
-    console.log('No user found in storage');
-    alert('Invalid email or password!');
-  }
+    
+    // Hide loading state
+    hideLoading(loginBtn, originalText);
+  }, 1000); // 1 second loading delay
 }
 
 function showCreateAccount() {
-    document.getElementById("loginPage").classList.add("hidden");
-    document.getElementById("createPage").classList.remove("hidden");
-    clearErrors();
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    showLoading(btn, originalText);
+    
+    setTimeout(() => {
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("createPage").classList.remove("hidden");
+        clearErrors();
+        hideLoading(btn, originalText);
+    }, 600);
 }
 
 function showLogin() {
-    document.getElementById("createPage").classList.add("hidden");
-    document.getElementById("loginPage").classList.remove("hidden");
-    clearErrors();
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    showLoading(btn, originalText);
+    
+    setTimeout(() => {
+        document.getElementById("createPage").classList.add("hidden");
+        document.getElementById("loginPage").classList.remove("hidden");
+        clearErrors();
+        hideLoading(btn, originalText);
+    }, 600);
 }
 
 // Create account
@@ -507,60 +573,56 @@ function createAccount() {
   const phone = document.getElementById("createPhone").value.trim();
   const password = document.getElementById("createPassword").value.trim();
   const confirmPassword = document.getElementById("confirmPassword").value.trim();
+  const createBtn = event.target;
+  const originalText = createBtn.innerHTML;
   
-  // Clear previous errors
-  clearErrors();
+  // Show loading state
+  showLoading(createBtn, originalText);
   
-  // Validate inputs
-  let isValid = true;
-  
-  if (!validateName(name, "createNameError")) isValid = false;
-  if (!validateEmail(email, "createEmailError")) isValid = false;
-  if (!validatePhone(phone, "createPhoneError")) isValid = false;
-  if (!validatePassword(password, "createPasswordError")) isValid = false;
-  if (password !== confirmPassword) {
-    document.getElementById("confirmPasswordError").classList.add("show");
-    isValid = false;
-  }
-  
-  if (isValid) {
-    // Check if email already exists
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    if (users.find(u => u.email === email)) {
-      alert('An account with this email already exists!');
-      return;
+  setTimeout(() => {
+    // Clear previous errors
+    clearErrors();
+    
+    // Validate inputs
+    let isValid = true;
+    
+    if (!validateName(name, "createNameError")) isValid = false;
+    if (!validateEmail(email, "createEmailError")) isValid = false;
+    if (!validatePhone(phone, "createPhoneError")) isValid = false;
+    if (!validatePassword(password, "createPasswordError")) isValid = false;
+    if (password !== confirmPassword) {
+      document.getElementById("confirmPasswordError").classList.add("show");
+      isValid = false;
     }
     
-    // Create new user
-    const newUser = {
-      name: name,
-      email: email,
-      phone: phone,
-      password: password,
-      createdAt: new Date().toISOString()
-    };
-    
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    
-    alert('Account created successfully! You can now login.');
-    showLogin();
-  }
-}
-
-// Logout function
-function logout() {
-  localStorage.removeItem('currentUser');
-  document.getElementById("dashboard").classList.add("hidden");
-  document.getElementById("loginPage").classList.remove("hidden");
-  
-  // Clear login form
-  document.getElementById("loginForm").reset();
-  document.querySelectorAll('.char-counter span').forEach(counter => {
-    counter.textContent = '0';
-  });
-  
-  alert('You have been logged out successfully!');
+    if (isValid) {
+      // Check if email already exists
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.find(u => u.email === email)) {
+        hideLoading(createBtn, originalText);
+        alert('An account with this email already exists!');
+        return;
+      }
+      
+      // Create new user
+      const newUser = {
+        name: name,
+        email: email,
+        phone: phone,
+        password: password,
+        createdAt: new Date().toISOString()
+      };
+      
+      users.push(newUser);
+      localStorage.setItem('users', JSON.stringify(users));
+      
+      hideLoading(createBtn, originalText);
+      alert('Account created successfully! You can now login.');
+      showLogin();
+    } else {
+      hideLoading(createBtn, originalText);
+    }
+  }, 1200);
 }
 
 // Initialize event listeners
@@ -651,12 +713,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // Form submissions
   document.getElementById('foundForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    submitFoundReport();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.click();
+    }
   });
   
   document.getElementById('lostForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    submitLostReport();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.click();
+    }
   });
   
   // Check if user is already logged in
@@ -753,28 +821,38 @@ function drag(e) {
   }
 }
 
-// Add event listeners for dragging
-helpHeader.addEventListener('mousedown', dragStart);
-document.addEventListener('mousemove', drag);
-document.addEventListener('mouseup', dragEnd);
+// Add event listeners for dragging - DISABLED
+// helpHeader.addEventListener('mousedown', dragStart);
+// document.addEventListener('mousemove', drag);
+// document.addEventListener('mouseup', dragEnd);
 
-// Touch events for mobile
-helpHeader.addEventListener('touchstart', dragStart);
-document.addEventListener('touchmove', drag);
-document.addEventListener('touchend', dragEnd);
+// Touch events for mobile - DISABLED
+// helpHeader.addEventListener('touchstart', dragStart);
+// document.addEventListener('touchmove', drag);
+// document.addEventListener('touchend', dragEnd);
 
 // Show Admin Panel
 function showAdminPanel() {
-  // Check if current user is admin
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-  if (!currentUser || !currentUser.isAdmin) {
-    alert('Access denied! Only admin users can access this panel.');
-    return;
-  }
+  const btn = event.target;
+  const originalText = btn.innerHTML;
   
-  hideAll();
-  document.getElementById("adminPanel").classList.remove("hidden");
-  showAllReports();
+  // Show loading state
+  showLoading(btn, originalText);
+  
+  setTimeout(() => {
+    // Check if current user is admin
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    if (!currentUser || !currentUser.isAdmin) {
+      hideLoading(btn, originalText);
+      alert('Access denied! Only admin users can access this panel.');
+      return;
+    }
+    
+    hideAll();
+    document.getElementById("adminPanel").classList.remove("hidden");
+    showAllReports();
+    hideLoading(btn, originalText);
+  }, 600);
 }
 
 // Show all reports for admin
@@ -1044,52 +1122,90 @@ function exportReports() {
   
   alert('Reports exported successfully!');
 }
-function showFound() {
-  hideAll();
-  document.getElementById("found").classList.remove("hidden");
+
+// Logout function
+function logout() {
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  
+  // Show loading state
+  showLoading(btn, originalText);
+  
+  setTimeout(() => {
+    // Clear current user from localStorage
+    localStorage.removeItem('currentUser');
+    
+    // Reset UI to login state
+    document.getElementById("dashboard").classList.add("hidden");
+    document.getElementById("loginPage").classList.remove("hidden");
+    
+    // Clear login form
+    document.getElementById("loginForm").reset();
+    document.querySelectorAll('.char-counter span').forEach(counter => {
+      counter.textContent = '0';
+    });
+    
+    // Clear any errors
+    clearErrors();
+    
+    hideLoading(btn, originalText);
+    alert('You have been logged out successfully!');
+  }, 800);
 }
 
 // Submit Found Report
-function submitFoundReport() {
-  clearErrors();
+function submitFoundReport(event) {
+  const submitBtn = event.target;
+  const originalText = submitBtn.innerHTML;
   
-  const name = document.getElementById('foundName').value.trim();
-  const email = document.getElementById('foundEmail').value.trim();
-  const phone = document.getElementById('foundPhone').value.trim();
-  const location = document.getElementById('foundLocation').value.trim();
-  const description = document.getElementById('foundDescription').value.trim();
-  const fileInput = document.getElementById('foundFile');
+  // Show loading state
+  showLoading(submitBtn, originalText);
   
-  let isValid = true;
-  if (!validateName(name, 'foundNameError')) isValid = false;
-  if (!validateEmail(email, 'foundEmailError')) isValid = false;
-  if (!validatePhone(phone, 'foundPhoneError')) isValid = false;
-  if (!selectedFoundSite) {
-    alert('Please select where the item was found');
-    isValid = false;
-  }
-  if (location.length < 3) {
-    document.getElementById('foundLocationError').classList.add('show');
-    isValid = false;
-  }
-  
-  if (!isValid) return;
-  
-  // Image upload
-  let imageData = null;
-  if (fileInput.files && fileInput.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      imageData = e.target.result;
-      saveFoundReportWithData(imageData);
-    };
-    reader.readAsDataURL(fileInput.files[0]);
-  } else {
-    saveFoundReportWithData(null);
-  }
+  setTimeout(() => {
+    clearErrors();
+    
+    const name = document.getElementById('foundName').value.trim();
+    const email = document.getElementById('foundEmail').value.trim();
+    const phone = document.getElementById('foundPhone').value.trim();
+    const location = document.getElementById('foundLocation').value.trim();
+    const description = document.getElementById('foundDescription').value.trim();
+    const fileInput = document.getElementById('foundFile');
+    
+    let isValid = true;
+    if (!validateName(name, 'foundNameError')) isValid = false;
+    if (!validateEmail(email, 'foundEmailError')) isValid = false;
+    if (!validatePhone(phone, 'foundPhoneError')) isValid = false;
+    if (!selectedFoundSite) {
+      hideLoading(submitBtn, originalText);
+      alert('Please select where the item was found');
+      isValid = false;
+    }
+    if (location.length < 3) {
+      document.getElementById('foundLocationError').classList.add('show');
+      isValid = false;
+    }
+    
+    if (!isValid) {
+      hideLoading(submitBtn, originalText);
+      return;
+    }
+    
+    // Image upload
+    let imageData = null;
+    if (fileInput.files && fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imageData = e.target.result;
+        saveFoundReportWithData(imageData, submitBtn, originalText);
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      saveFoundReportWithData(null, submitBtn, originalText);
+    }
+  }, 800);
 }
 
-function saveFoundReportWithData(imageData) {
+function saveFoundReportWithData(imageData, submitBtn, originalText) {
   const name = document.getElementById('foundName').value.trim();
   const email = document.getElementById('foundEmail').value.trim();
   const phone = document.getElementById('foundPhone').value.trim();
@@ -1100,6 +1216,7 @@ function saveFoundReportWithData(imageData) {
   if (selectedFoundItems.includes('Others')) {
     const othersValue = document.getElementById('foundOthersSpecify').value.trim();
     if (!othersValue) {
+      hideLoading(submitBtn, originalText);
       alert('Please specify the item when selecting "Others"');
       return;
     }
@@ -1107,6 +1224,7 @@ function saveFoundReportWithData(imageData) {
   } else if (selectedFoundItems.length > 0) {
     itemName = selectedFoundItems.join(', ');
   } else {
+    hideLoading(submitBtn, originalText);
     alert('Please select at least one item');
     return;
   }
@@ -1125,6 +1243,7 @@ function saveFoundReportWithData(imageData) {
   };
   
   saveReport(report);
+  hideLoading(submitBtn, originalText);
   alert('Found report submitted successfully! Location: ' + selectedFoundSite + ' - ' + location);
   goBack();
   showReports(); // Redirect to search inventory
@@ -1132,69 +1251,84 @@ function saveFoundReportWithData(imageData) {
 }
 
 // Submit lost report
-function submitLostReport() {
-  clearErrors();
+function submitLostReport(event) {
+  const submitBtn = event.target;
+  const originalText = submitBtn.innerHTML;
   
-  const name = document.getElementById('lostName').value.trim();
-  const email = document.getElementById('lostEmail').value.trim();
-  const phone = document.getElementById('lostPhone').value.trim();
-  const location = document.getElementById('lostLocation').value.trim();
-  const date = document.getElementById('lostDate').value;
-  const description = document.getElementById('description').value.trim();
-  const reward = document.getElementById('lostReward').value.trim();
-  const fileInput = document.querySelectorAll('#lostForm input[type="file"]')[0]; // Reference the file input
+  // Show loading state
+  showLoading(submitBtn, originalText);
+  
+  setTimeout(() => {
+    clearErrors();
+    
+    const name = document.getElementById('lostName').value.trim();
+    const email = document.getElementById('lostEmail').value.trim();
+    const phone = document.getElementById('lostPhone').value.trim();
+    const location = document.getElementById('lostLocation').value.trim();
+    const date = document.getElementById('lostDate').value;
+    const description = document.getElementById('description').value.trim();
+    const reward = document.getElementById('lostReward').value.trim();
+    const fileInput = document.querySelectorAll('#lostForm input[type="file"]')[0]; // Reference the file input
 
-  let isValid = true;
-  if (!validateName(name, 'lostNameError')) isValid = false;
-  if (!validateEmail(email, 'lostEmailError')) isValid = false;
-  if (!validatePhone(phone, 'lostPhoneError')) isValid = false;
-  if (!selectedLostSite) {
-    alert('Please select where you lost the item');
-    isValid = false;
-  }
-  if (location.length < 3) {
-    document.getElementById('lostLocationError').classList.add('show');
-    isValid = false;
-  }
-  if (!date) {
-    alert('Please select date lost');
-    isValid = false;
-  }
-  
-  // Date format validation for lost report
-  if (date) {
-    const dateParts = date.split('/');
-    if (dateParts.length === 3 && dateParts[2]) {
-      const year = parseInt(dateParts[2]);
-      // Check if year is exactly 4 digits
-      if (!/^\d{4}$/.test(dateParts[2])) {
-        alert('Year must be exactly 4 digits (yyyy format).');
-        isValid = false;
-      }
-      // Check if year is within reasonable range (1900-2100)
-      if (year < 1900 || year > 2100) {
-        alert('Year must be between 1900 and 2100.');
-        isValid = false;
+    let isValid = true;
+    if (!validateName(name, 'lostNameError')) isValid = false;
+    if (!validateEmail(email, 'lostEmailError')) isValid = false;
+    if (!validatePhone(phone, 'lostPhoneError')) isValid = false;
+    if (!selectedLostSite) {
+      hideLoading(submitBtn, originalText);
+      alert('Please select where you lost the item');
+      isValid = false;
+    }
+    if (location.length < 3) {
+      document.getElementById('lostLocationError').classList.add('show');
+      isValid = false;
+    }
+    if (!date) {
+      hideLoading(submitBtn, originalText);
+      alert('Please select date lost');
+      isValid = false;
+    }
+    
+    // Date format validation for lost report
+    if (date) {
+      const dateParts = date.split('/');
+      if (dateParts.length === 3 && dateParts[2]) {
+        const year = parseInt(dateParts[2]);
+        // Check if year is exactly 4 digits
+        if (!/^\d{4}$/.test(dateParts[2])) {
+          hideLoading(submitBtn, originalText);
+          alert('Year must be exactly 4 digits (yyyy format).');
+          isValid = false;
+        }
+        // Check if year is within reasonable range (1900-2100)
+        if (year < 1900 || year > 2100) {
+          hideLoading(submitBtn, originalText);
+          alert('Year must be between 1900 and 2100.');
+          isValid = false;
+        }
       }
     }
-  }
-  
-  if (!isValid) return;
+    
+    if (!isValid) {
+      hideLoading(submitBtn, originalText);
+      return;
+    }
 
-  // Handle Image Upload
-  if (fileInput.files && fileInput.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      saveLostReportWithData(e.target.result);
-    };
-    reader.readAsDataURL(fileInput.files[0]);
-  } else {
-    saveLostReportWithData(null);
-  }
+    // Handle Image Upload
+    if (fileInput.files && fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        saveLostReportWithData(e.target.result, submitBtn, originalText);
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      saveLostReportWithData(null, submitBtn, originalText);
+    }
+  }, 800);
 }
 
 // New helper function to save the data
-function saveLostReportWithData(imageData) {
+function saveLostReportWithData(imageData, submitBtn, originalText) {
   const name = document.getElementById('lostName').value.trim();
   const email = document.getElementById('lostEmail').value.trim();
   const phone = document.getElementById('lostPhone').value.trim();
@@ -1224,6 +1358,7 @@ function saveLostReportWithData(imageData) {
   };
   
   saveReport(report);
+  hideLoading(submitBtn, originalText);
   alert('Lost report submitted successfully!');
   goBack();
   showReports();
